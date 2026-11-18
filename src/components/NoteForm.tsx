@@ -3,17 +3,20 @@ import type { Note } from "../types/Note";
 
 interface NoteFormProps {
   onAddNote: (note: Note) => void;
+  categories?: string[];
 }
 
-export function NoteForm({ onAddNote }: NoteFormProps) {
+export function NoteForm({ onAddNote, categories = [] }: NoteFormProps) {
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
   const [category, setCategory] = useState("");
 
+  const isValid = title.trim() && content.trim() && category.trim();
+
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
-    if (!title.trim() || !content.trim() || !category.trim()) {
+    if (!isValid) {
       return;
     }
 
@@ -32,30 +35,47 @@ export function NoteForm({ onAddNote }: NoteFormProps) {
   };
 
   return (
-    <form onSubmit={handleSubmit}>
+    <form className="note-form" onSubmit={handleSubmit}>
       <h2>Tambah Catatan</h2>
 
-      <input
-        type="text"
-        placeholder="Judul catatan"
-        value={title}
-        onChange={(event) => setTitle(event.target.value)}
-      />
+      <label className="field">
+        <span>Judul</span>
+        <input
+          type="text"
+          placeholder="Judul catatan"
+          value={title}
+          onChange={(event) => setTitle(event.target.value)}
+        />
+      </label>
 
-      <textarea
-        placeholder="Isi catatan"
-        value={content}
-        onChange={(event) => setContent(event.target.value)}
-      />
+      <label className="field">
+        <span>Isi</span>
+        <textarea
+          placeholder="Isi catatan"
+          value={content}
+          onChange={(event) => setContent(event.target.value)}
+        />
+      </label>
 
-      <input
-        type="text"
-        placeholder="Kategori"
-        value={category}
-        onChange={(event) => setCategory(event.target.value)}
-      />
+      <label className="field">
+        <span>Kategori</span>
+        <input
+          type="text"
+          list="category-list"
+          placeholder="Kategori"
+          value={category}
+          onChange={(event) => setCategory(event.target.value)}
+        />
+        <datalist id="category-list">
+          {categories.map((item) => (
+            <option key={item} value={item} />
+          ))}
+        </datalist>
+      </label>
 
-      <button type="submit">Tambah Catatan</button>
+      <button className="btn btn-primary" type="submit" disabled={!isValid}>
+        Tambah Catatan
+      </button>
     </form>
   );
 }
