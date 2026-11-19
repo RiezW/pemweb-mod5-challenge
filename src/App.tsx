@@ -1,4 +1,5 @@
 import { useState, type CSSProperties } from "react";
+import { PostList } from "./components/PostList";
 import type { Note } from "./types/Note";
 import { useLocalStorage } from "./hooks/useLocalStorage";
 import { categoryHue } from "./utils/categoryColor";
@@ -10,6 +11,7 @@ function App() {
   const [notes, setNotes] = useLocalStorage<Note[]>("notes", []);
   const [search, setSearch] = useState("");
   const [activeCategory, setActiveCategory] = useState<string | null>(null);
+  const [activeTab, setActiveTab] = useState<"notes" | "posts">("notes");
 
   const handleAddNote = (note: Note) => {
     setNotes((prev) => [note, ...prev]);
@@ -41,13 +43,46 @@ function App() {
   return (
     <main className="app">
       <header className="app-header">
-        <h1>Catatan</h1>
+        <h1>{activeTab === "notes" ? "Catatan" : "Posts API"}</h1>
         <p>
-          {notes.length === 0
-            ? "Simpan ide, tugas, dan hal penting di sini."
-            : `${notes.length} catatan tersimpan di browser ini.`}
+          {activeTab === "notes"
+            ? notes.length === 0
+              ? "Simpan ide, tugas, dan hal penting di sini."
+              : `${notes.length} catatan tersimpan di browser ini.`
+            : "Terhubung ke Express + Prisma + Neon (Modul 4)"}
         </p>
+
+        {/* Navigasi Tab Tahap 1 & Tahap 2 */}
+        <div className="chips" style={{ justifyContent: "center", marginTop: "20px" }}>
+          <button
+            type="button"
+            className="chip"
+            aria-pressed={activeTab === "notes"}
+            onClick={() => setActiveTab("notes")}
+          >
+            <span className="dot" />
+            Tahap 1: Catatan Lokal
+          </button>
+          <button
+            type="button"
+            className="chip"
+            aria-pressed={activeTab === "posts"}
+            style={{ "--hue": 150 } as CSSProperties}
+            onClick={() => setActiveTab("posts")}
+          >
+            <span className="dot" />
+            Tahap 2: REST API Posts
+          </button>
+        </div>
       </header>
+
+      {activeTab === "notes" ? (
+        <div className="layout">
+          {/* ... seluruh kode NoteForm & section notes milik Orang 1 & 2 tetap di sini ... */}
+        </div>
+      ) : (
+        <PostList />
+      )}
 
       <div className="layout">
         <NoteForm onAddNote={handleAddNote} categories={categories} />
